@@ -1,19 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import Filter from "./components/Filter";
 import Add from "./components/Add";
 import Numbers from "./components/Numbers";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: 1234 },
-    { name: "Asterius", number: 34 },
-    { name: "Pan", number: 124 },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setNewFilter] = useState("");
   const [filteredPeople, setFiltredPeople] = useState(persons);
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((response) => {
+      setPersons(response.data);
+      setFiltredPeople(response.data);
+    });
+  }, []);
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
