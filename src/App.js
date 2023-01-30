@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import Add from "./components/Add";
 import Numbers from "./components/Numbers";
-import { addNumber, deleteNumber, getAll } from "./services/persons";
+import {
+  addNumber,
+  deleteNumber,
+  getAll,
+  replaceNumber,
+} from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -49,12 +54,32 @@ const App = () => {
 
     persons.forEach((person) => {
       if (person.name === newName) {
-        alert(`${newName} already exists.`);
         exists = true;
+
+        if (
+          window.confirm(
+            `${newName} already exists, replace the old number with a new one?`
+          )
+        ) {
+          const changedNumber = { ...person, number: newNumber };
+
+          replaceNumber(person.id, changedNumber).then((changedNumber) => {
+            const newPeople = persons.map((person) =>
+              person.name !== newName ? person : changedNumber
+            );
+
+            setPersons(newPeople);
+            setFiltredPeople(newPeople);
+          });
+        }
       }
     });
 
-    if (exists) return;
+    if (exists) {
+      setNewName("");
+      setNewNumber("");
+      return;
+    }
 
     addNumber({ name: newName, number: newNumber }).then((newPersons) => {
       setPersons(persons.concat(newPersons));

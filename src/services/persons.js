@@ -9,4 +9,9 @@ const addNumber = (newPerson) =>
 
 const deleteNumber = (id) => axios.delete(`${baseUrl}/${id}`);
 
-export { getAll, addNumber, deleteNumber };
+const replaceNumber = (id, changedNumber) =>
+  axios
+    .put(`${baseUrl}/${id}`, changedNumber)
+    .then((response) => response.data);
+
+export { getAll, addNumber, deleteNumber, replaceNumber };
