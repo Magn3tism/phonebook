@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import Add from "./components/Add";
 import Numbers from "./components/Numbers";
-import getAll from "./services/persons";
+import { addNumber, deleteNumber, getAll } from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -56,12 +56,20 @@ const App = () => {
 
     if (exists) return;
 
-    let newPersons = persons.concat({ name: newName, number: newNumber });
+    addNumber({ name: newName, number: newNumber }).then((newPersons) => {
+      setPersons(persons.concat(newPersons));
+      setFiltredPeople(persons.concat(newPersons));
+      setNewName("");
+      setNewNumber("");
+    });
+  };
+
+  const handleDelete = (id) => {
+    deleteNumber(id);
+    let newPersons = persons.filter((person) => person.id !== id);
 
     setPersons(newPersons);
     setFiltredPeople(newPersons);
-    setNewName("");
-    setNewNumber("");
   };
 
   return (
@@ -76,7 +84,7 @@ const App = () => {
         handleSubmit={handleSubmit}
       />
 
-      <Numbers people={filteredPeople} />
+      <Numbers people={filteredPeople} handleDelete={handleDelete} />
     </div>
   );
 };
