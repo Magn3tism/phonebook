@@ -10,6 +10,18 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    let exists = false;
+
+    persons.forEach((person) => {
+      if (person.name === newName) {
+        alert(`${newName} already exists.`);
+        exists = true;
+      }
+    });
+
+    if (exists) return;
+
     setPersons(persons.concat({ name: newName }));
     setNewName("");
   };
