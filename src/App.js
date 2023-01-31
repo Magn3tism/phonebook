@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import Add from "./components/Add";
 import Numbers from "./components/Numbers";
+import Notification from "./components/Notification";
 import {
   addNumber,
   deleteNumber,
@@ -16,6 +17,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setNewFilter] = useState("");
   const [filteredPeople, setFiltredPeople] = useState(persons);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     getAll().then((allPeople) => {
@@ -64,9 +66,15 @@ const App = () => {
           const changedNumber = { ...person, number: newNumber };
 
           replaceNumber(person.id, changedNumber).then((changedNumber) => {
-            const newPeople = persons.map((person) =>
-              person.name !== newName ? person : changedNumber
-            );
+            const newPeople = persons.map((person) => {
+              if (person.name === newName) {
+                setMessage(`${newName} has been updated`);
+                setTimeout(() => {
+                  setMessage("");
+                }, 3000);
+              }
+              return person.name !== newName ? person : changedNumber;
+            });
 
             setPersons(newPeople);
             setFiltredPeople(newPeople);
@@ -84,6 +92,10 @@ const App = () => {
     addNumber({ name: newName, number: newNumber }).then((newPersons) => {
       setPersons(persons.concat(newPersons));
       setFiltredPeople(persons.concat(newPersons));
+      setMessage(`${newName} has been added`);
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
       setNewName("");
       setNewNumber("");
     });
@@ -91,7 +103,14 @@ const App = () => {
 
   const handleDelete = (id) => {
     deleteNumber(id);
-    let newPersons = persons.filter((person) => person.id !== id);
+    let newPersons = persons.filter((person) => {
+      if (person.id === id) {
+        setMessage(`${person.name} has been deleted`);
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      } else return true;
+    });
 
     setPersons(newPersons);
     setFiltredPeople(newPersons);
@@ -99,6 +118,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification msg={message} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
       <Add
